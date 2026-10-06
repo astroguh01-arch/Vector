@@ -1,5 +1,5 @@
 # Vector
-<<<<<<< HEAD
+
 Vector is an experimental Luau runtime for adaptive temporal state activity tracking. It measures relative write activity, filters micro-churn with dynamic resolution, and separates fields into fast and slow activity planes. Designed for bursty game-state data where hot and cold values should be treated differently.
 =======
 
@@ -61,10 +61,10 @@ The main principles are:
 
 ## Important caveat
 
-This is a prototype and may change substantially as the benchmarking and API design evolve. The codebase is expected to evolve quickly as the model is validated against real-world workloads.
+This is a prototype and may change substantially as the benchmarking and API design evolve.
 
 ## Testing and benchmarking plan
-
+      
 Before release, the project should be evaluated under several conditions:
 
 - static vs dynamic resolution behavior
@@ -76,15 +76,11 @@ Before release, the project should be evaluated under several conditions:
 
 ## License
 
-This project does not currently declare a license. If you plan to publish it publicly, add a license file before distributing it to others.
+MIT License in LICENSE.md
 
 ## Notes
 
-This project is best viewed as an experimental temporal state system rather than a generic math utility library. It is primarily designed for state-heavy, burst-driven applications.
+This project is currently in testing, It is designed for databases with stateful/active variables such as games.
 
----
 
-## Short description for GitHub
-
-Vector is an experimental Luau runtime for adaptive temporal state activity tracking. It measures relative write activity, filters micro-churn with dynamic resolution, and separates fields into fast and slow activity planes. Designed for bursty game-state data where hot and cold values should be treated differently. Early-stage, benchmark-oriented, and intended for experimentation.
 >>>>>>> 351447b (Vector)
