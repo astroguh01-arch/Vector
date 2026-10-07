@@ -35,10 +35,7 @@ That means:
 
 This repository is in active development.
 
-- The internal model is the focus
-- The public-facing API is intentionally minimal or incomplete
-- Debug instrumentation is expected to be removed before public release
-- Benchmarking and external testing are part of the next phase
+-Public API Incomplete
 
 ## Project structure
 
@@ -63,16 +60,6 @@ The main principles are:
 
 This is a prototype and may change substantially as the benchmarking and API design evolve.
 
-## Testing and benchmarking plan
-      
-Before release, the project should be evaluated under several conditions:
-
-- static vs dynamic resolution behavior
-- bursty writes vs stable fields
-- noisy update patterns
-- fast/slow plane balance
-- replication and state update overhead
-- memory overhead and metadata cost
 
 ## License
 
