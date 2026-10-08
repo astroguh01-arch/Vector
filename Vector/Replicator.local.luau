@@ -1,7 +1,7 @@
 local ClientVector = require(script.Parent.VectorField)
 local Vector = require(game.ReplicatedStorage.Vector)
 
-script.Parent.Shallow:Connect(function(EUID,Data,Type,...)
+script.Parent.Shallow.OnClientEvent:Connect(function(EUID,Data,Type,...)
 	if Type == "Correction" then
 		local Var = ...
 		local Copy = ClientVector[EUID]

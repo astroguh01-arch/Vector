@@ -109,7 +109,7 @@ local function CheckRate()
 	else
 		Vector.Delay = Delta
 	end
-	
+	Vector.GlobalUpdate = os.clock()
 end
 
 	
@@ -197,9 +197,9 @@ function Vector.Velocity(EUID: number | string,Var: any)
 	VectorField[EUID].Meta.DeltaRV = math.abs( (VectorField[EUID].Meta.RV - RV ) / (VectorField[EUID].Meta.RV + (Resolution / 10)))
 	
 	if Delta > VectorField[EUID].Meta.DeltaRV + Gate then
-		VectorField[EUID].Meta.VelocityMap.Fast[table.find(VectorField[EUID].Meta.IDs,Var)] = Var
-	elseif Delta < VectorField[EUID].Meta.DeltaRV - Gate then
 		VectorField[EUID].Meta.VelocityMap.Slow[table.find(VectorField[EUID].Meta.IDs,Var)] = Var
+	elseif Delta < VectorField[EUID].Meta.DeltaRV - Gate then
+		VectorField[EUID].Meta.VelocityMap.Fast[table.find(VectorField[EUID].Meta.IDs,Var)] = Var
 	end
 	
 	print(VectorField[EUID].Meta.DeltaRV)
@@ -340,6 +340,8 @@ function Vector.Read(EUID: number | string,Var: any)
 		elseif Type == "Bool" then
 			Res = buffer.readu8(Value,0)
 		end
+		elseif Type == "Number" then
+			Res = buffer.readf64(Value,0)
 		else
 			Res = Value
 		end
@@ -418,21 +420,22 @@ function Vector.Write(EUID: number | string,Info: any)
 			Vector.Work += #WriteF 
 			print(EUID)
 			local DelayN = CheckRate()
-			--if DelayN then
-				--UnsafeVector.Distribute(EUID,"Write",Info,Vector.Threads)
-			--return 
-			--else
-				--UnsafeVector.Sync(EUID,VectorField[EUID])
-		--	end
+			if DelayN then
+				UnsafeVector.Distribute(EUID,"Write",Info,Vector.Threads)
+			return 
+			else
+				UnsafeVector.Sync(EUID,VectorField[EUID])
+			end
 			
 			for i,v in pairs(Info) do
 				if VS.Data[i] then
 					WriteF[i] = v.Value
 				else
 					VS.Data[i] = {Value = v.Value,Type = v.Type or typeof(v.Value),Critical = v.Critical or false}
-				
-					TimeBit(EUID,i,os.clock())
+					
 					Vector.Velocity(EUID,i)
+					TimeBit(EUID,i,os.clock())
+				
 				end
 				print(v)
 			end
@@ -451,10 +454,9 @@ function Vector.Write(EUID: number | string,Info: any)
 						print(	v)
 							VS.Data[i].Value = Info[i].Value
 						VS.Data[i].Type = Info[i].Type or typeof(Info[i].Value)
-						
-							TimeBit(EUID,i,os.clock())
+					
 						    Vector.Velocity(EUID,i)
-						
+						TimeBit(EUID,i,os.clock())
 					end
 					print(v) 
 				end
