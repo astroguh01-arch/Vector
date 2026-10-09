@@ -57,7 +57,6 @@ local function NToM(N: any)
 end
 local function CountPrecision(n)
 	n = math.abs(n)
-	print(n)
 	local decimals = 0
 	local Space = 0
 	local NDetail = 0
@@ -102,14 +101,19 @@ local function CheckRate()
 	local Gate = Delta * 0.4 + (1 - 0.4) * Vector.Delay 
 	if Delta > Gate then
 		Vector.Delay = Delta
+		Vector.GlobalUpdate = os.clock()
+		
 		return true
 	else
+		Vector.GlobalUpdate = os.clock()
 		return false
+			
 	end
 	else
 		Vector.Delay = Delta
+		Vector.GlobalUpdate = os.clock()
 	end
-	Vector.GlobalUpdate = os.clock()
+	
 end
 
 	
@@ -136,7 +140,6 @@ function Vector.Resolution(EUID: number | string)
 	local Precision =  CountPrecision(FBit)
 	
 	VectorField[EUID].Meta.Resolution = 10 ^ (1 - Precision)
-	print(VectorField[EUID].Meta.Resolution)
 	return VectorField[EUID].Meta.Resolution
 end
 @native
@@ -182,7 +185,7 @@ function Vector.Velocity(EUID: number | string,Var: any)
 	
 	local Delta = math.abs((NTime - PTime) / (NTime + Resolution / 10))
 	
-	print(Delta,NTime,PTime)
+
 	
 	local SlowestVel = FindVel(EUID)
 	local Fastest = VectorField[EUID].Meta.LastUpdate 
@@ -202,7 +205,7 @@ function Vector.Velocity(EUID: number | string,Var: any)
 		VectorField[EUID].Meta.VelocityMap.Fast[table.find(VectorField[EUID].Meta.IDs,Var)] = Var
 	end
 	
-	print(VectorField[EUID].Meta.DeltaRV)
+
 	
 	VelSort(EUID)
 end
@@ -413,19 +416,19 @@ function Vector.Write(EUID: number | string,Info: any)
 	if EUID then
 	
 		if VectorField[EUID] then
-			print(EUID)
+			
 			local VS = VectorField[EUID]
 			local WriteF = {}
 			
 			Vector.Work += #WriteF 
-			print(EUID)
-			local DelayN = CheckRate()
-			if DelayN then
-				UnsafeVector.Distribute(EUID,"Write",Info,Vector.Threads)
-			return 
-			else
-				UnsafeVector.Sync(EUID,VectorField[EUID])
-			end
+			
+			--local DelayN = CheckRate()
+			--if DelayN then
+			--	UnsafeVector.Distribute(EUID,"Write",Info,Vector.Threads)
+			--return 
+			--else
+			--	UnsafeVector.Sync(EUID,VectorField[EUID])
+			--end
 			
 			for i,v in pairs(Info) do
 				if VS.Data[i] then
@@ -437,34 +440,34 @@ function Vector.Write(EUID: number | string,Info: any)
 					TimeBit(EUID,i,os.clock())
 				
 				end
-				print(v)
+			
 			end
 		
 			if VS.Meta.Valid then
 				if VS.Meta.Compact then
 					for i,v in pairs(WriteF) do
 						Vector.Deserialize(VS)
-						print(VS)
+					
 		
 					end
 			
 				end
 				for i,v in pairs(WriteF) do
 					 if VS.Data[i] then
-						print(	v)
+					
 							VS.Data[i].Value = Info[i].Value
 						VS.Data[i].Type = Info[i].Type or typeof(Info[i].Value)
 					
 						    Vector.Velocity(EUID,i)
 						TimeBit(EUID,i,os.clock())
 					end
-					print(v) 
+				
 				end
 			
 			end
 		
 			if not VS.Meta.Compact then
-				print(VS)
+			
 				Vector.Serialize(VS)
 				
 			end
@@ -486,8 +489,7 @@ end
 
 function Vector.Register(Entity: Player | Model,Info: VectorTypes.RegisterInfo)
     local EUID
-	print(Entity)
-	if not Entity:IsA("Model") then
+	if  Entity:IsA("Player") then
 		EUID = Entity.UserId
 		VectorField[EUID] =  {}
 		VectorField[EUID] = {Data = Info.Data
@@ -566,7 +568,7 @@ function Vector.Register(Entity: Player | Model,Info: VectorTypes.RegisterInfo)
      
 	return VectorField[EUID]
 end
-function Vector.Init(Entity: Player | Model,Info: VectorTypes.VectorElement)
+function Vector.Init(Entity: Player | Model,Info: VectorTypes.RegisterInfo)
 	if Entity == nil then
 		return
 	end
@@ -669,6 +671,7 @@ function Vector.Listen(Info: VectorTypes.VectorElement,Var: any,Type: string,Cal
 	-- Poll - constantly check
     -- Event -  connect and wait for event
 	-- OnWrite - lazy listneing
+	Vector.SF = Vector.Heartbeat or 0
 	Info.Data.Listening[Var] = {Type = Type,LastUpdate = os.clock(),Callback = CallbackF,Value = Var.Value,Expiration = Duration}
 	if Type == "Poll" then
 	Vector.PollN += 1
@@ -678,6 +681,13 @@ function Vector.Listen(Info: VectorTypes.VectorElement,Var: any,Type: string,Cal
 	Vector.Poll = game.RunService.Heartbeat:Connect(function(dt)
 	
 		for i,v in pairs(Vector.PollT) do
+				Vector.SF += 1
+			if VectorField[v.EUID].Meta.VelocityMap.Slow[v.var] then
+					if Vector.SF % 4 ~= 0 then
+						Vector.SF = 0
+					continue
+					end
+			end
 			local Field = VectorField[v.EUID].Meta.Listening[v.var]
 			if VectorField[v.EUID].Data[v.var].Value ~= v.var.Value then
 				Field.Callback(VectorField[v.EUID])
