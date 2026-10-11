@@ -1,25 +1,47 @@
-local ClientVector = require(script.Parent.VectorField)
+local ClientVector = require(game.ReplicatedStorage.Vector.VectorField)
 local Vector = require(game.ReplicatedStorage.Vector)
+local Encoder = game:GetService("EncodingService")
 
-script.Parent.Shallow.OnClientEvent:Connect(function(EUID,Data,Type,...)
-	if Type == "Correction" then
+game.ReplicatedStorage.Vector.Shallow.OnClientEvent:Connect(function(EUID,Data,Operation,...)
+	
+	if Operation == "Correction" then
 		local Var = ...
 		local Copy = ClientVector[EUID]
+		local Value = Vector.Des(Data,Data.Type)
 		if Copy then
 			if Copy.Data[Var] then
-				Vector.Write(EUID,Data)
+				Copy.Data[Var] = Data
 			else
-				Vector.Write(EUID,Data)
+				Copy.Data[Var] = Data
 			end
 		end
+		print("yo")
 	end
-	if Type == "Sync" then
+	if Operation == "Sync" then
 		
-		local NData = Vector.Deserialize(Data)
-		ClientVector[EUID] = NData
-		Vector.Serialize(ClientVector[EUID].Data)
+		ClientVector[EUID] = Data
+ 
+		local NData = Vector.Deserialize(ClientVector[EUID])
+		
+	
+	
 	
 			
 		
+	end
+	if Operation == "Batch" then
+	
+		for i,v in Data do
+			
+		
+		
+			local VectorTable = ClientVector[v.UID]
+		
+			if VectorTable then
+				v.Data = Vector.Des(v.Data,v.Type,v.Compressed)
+				VectorTable.Data[v.Index] = v.Data
+				
+			end
+		end
 	end
 end)

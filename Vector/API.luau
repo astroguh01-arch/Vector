@@ -60,4 +60,49 @@ if Data then
 	return Vector.Read(EUID,Data)
 end
 end
+
+function module.Get(Entity)
+	local EUID 
+	if  Entity:IsA("Player") then
+		EUID = Entity.UserId
+	else
+		local Tags = Collector:GetTags(Entity)
+		EUID = Tags["EUID"]
+	end
+	if not EUID then
+		warn("Vector Has Not Been Made")
+		return 
+	end
+	if EUID then
+		return Vector.Get(EUID),EUID
+	end
+	return 
+end
+function module.Listen(Entity,Wrap,Target,Callback)
+	if Entity then
+		local EUID 
+		if  Entity:IsA("Player") then
+			EUID = Entity.UserId
+		else
+			local Tags = Collector:GetTags(Entity)
+			EUID = Tags["EUID"]
+		end
+		if not EUID then
+			warn("Vector Has Not Been Made")
+			return 
+		end
+		if not Wrap.Var then
+			warn("No Variable Given")
+			return false
+		elseif  not Wrap.Type then
+			Wrap.Type = "Poll"
+	        
+		end
+		
+		Vector.Listen(EUID,Wrap.Var,Wrap.Type,Wrap.Duration or 20,Target,Callback)
+		
+		return true
+	end
+	
+end
 return module
