@@ -31,7 +31,7 @@ Vector = {
 	PollN = 1;
 	PollT = {};
 	GlobalUpdate = os.clock();
-	Delay = 0;
+	Delay = nil;
 	Batch = {};
 	Task =  function()
 		Vector.Serde(Vector.Batch,true)
@@ -110,9 +110,18 @@ local function CountPrecision(n)
 end
 local function CheckRate()
 	
-	local Delta = math.abs((os.clock() - Vector.GlobalUpdate) / (Vector.GlobalUpdate + 0.01 / 10))
+
+	local Resolution = 0.1
+
+
+	local NTime = ((math.floor(os.clock() / Resolution) % 256) * Resolution) * 1
+	local PTime = ((math.floor(Vector.GlobalUpdate / Resolution) % 256) * Resolution) * 1
+	
+	local Delta = math.abs((NTime - PTime) / (NTime + 0.1 / 10))
 	if Vector.Delay then
 	local Gate = Delta * 0.4 + (1 - 0.4) * Vector.Delay 
+	print(Vector.Delay)
+	print(Delta)
 	if Delta > Gate then
 		Vector.Delay = Delta
 		Vector.GlobalUpdate = os.clock()
@@ -425,7 +434,8 @@ function Vector.Read(EUID: number | string,Var: any)
 			Res = Value
 		end
 	end
-	
+	Vector.GlobalUpdate = os.clock()
+	VectorS.Meta.LastUpdate = os.clock()
 	Vector.Velocity(EUID,Var)
 	TimeBit(EUID,Var,os.clock())
 	return Res
@@ -583,14 +593,16 @@ function Vector.Write(EUID: number | string,Info: any)
 			local WriteF = {}
 			
 			Vector.Work += #WriteF 
-			VectorField[EUID].Meta.LastUpdate = os.clock()		
+			VectorField[EUID].Meta.LastUpdate = os.clock()	
+			
 			if Config.Parallel then
 			 local DelayN = CheckRate()
 			 if DelayN then
+				print("ima distribute")
 				UnsafeVector.Distribute(EUID,"Write",Info,Vector.Threads)
 			 return 
 			 else
-			    UnsafeVector.Sync(EUID,VectorField[EUID])
+			   -- UnsafeVector.Sync(EUID,VectorField[EUID])
 				
 			 end
 			end
@@ -642,7 +654,7 @@ function Vector.Write(EUID: number | string,Info: any)
 				Vector.Serialize(VS)
 				
 			end
-			
+			Vector.GlobalUpdate = os.clock()
 		
 			if  Vector.Batching  then return end 
 			    Vector.Batching = true
