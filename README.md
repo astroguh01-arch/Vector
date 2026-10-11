@@ -69,5 +69,8 @@ MIT License in LICENSE.md
 
 This project is currently in testing, It is designed for databases with stateful/active variables such as games.
 
+# Support
+
+Get support in the discord: https://discord.gg/MEYpU498Vh
 
 >>>>>>> 351447b (Vector)
