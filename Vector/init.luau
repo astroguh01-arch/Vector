@@ -120,8 +120,7 @@ local function CheckRate()
 	local Delta = math.abs((NTime - PTime) / (NTime + 0.1 / 10))
 	if Vector.Delay then
 	local Gate = Delta * 0.4 + (1 - 0.4) * Vector.Delay 
-	print(Vector.Delay)
-	print(Delta)
+	
 	if Delta > Gate then
 		Vector.Delay = Delta
 		Vector.GlobalUpdate = os.clock()
