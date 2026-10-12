@@ -15,7 +15,7 @@ game.ReplicatedStorage.Vector.Shallow.OnClientEvent:Connect(function(EUID,Data,O
 				Copy.Data[Var] = Data
 			end
 		end
-		print("yo")
+
 	end
 	if Operation == "Sync" then
 		
