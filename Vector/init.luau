@@ -414,7 +414,7 @@ function Vector.Read(EUID: number | string,Var: any)
 	local Type = VectorS.Data[Var].Type
 	local Value = Var.Value or VectorS.Data[Var].Value
 	local Ref = VectorS.Data[Var]
-	
+
 	local Res 
 	if VectorS then
 		local t = typeof(Value)
@@ -427,11 +427,12 @@ function Vector.Read(EUID: number | string,Var: any)
 			Res = Vector3.new(buffer.readf32(Value,0),buffer.readf32(Value,4),buffer.readf32(Value,8))
 		elseif Type == "Bool" then
 			Res = buffer.readu8(Value,0)
-		end
-		elseif Type == "Number" then
+		
+		elseif Type == "number" then
 			Res = buffer.readf64(Value,0)
 		else
 			Res = Value
+		end
 		end
 	end
 	Vector.GlobalUpdate = os.clock()
@@ -877,9 +878,14 @@ function Vector.Listen(EUID: VectorTypes.VectorElement,Var: any,Type: string,Dur
 	local Info = VectorField[EUID]
 	local Variable = Info.Data[Var]
 	local value = Vector.Des(Variable.Value,Variable.Type)
+	local Intercept = false
+	if Info.Meta.Listening[Var] then
+		Intercept = true
+	end
 	Info.Meta.Listening[Var] = {Type = Type,LastUpdate = os.clock(),Callback = CallbackF,Value = value,target = Target or false,Expiration = Duration}
 	
 	if Type == "Poll" then
+	if Intercept then Intercept = false return end
 	Vector.PollN += 1
 		Vector.PollT[Vector.PollN] = {EUID = Info.Meta.UID, var = Info.Meta.Listening[Var],Index = Var}
 	if Vector.Poll then return end
@@ -902,7 +908,9 @@ function Vector.Listen(EUID: VectorTypes.VectorElement,Var: any,Type: string,Dur
 				Field.Callback(VectorField[v.EUID])
 				Vector.PollN -= 1
 				Vector.PollT[i] = nil
-					VectorField[v.EUID].Meta.Listening[v.Index] = nil
+				VectorField[v.EUID].Meta.Listening[v.Index] = nil
+				v = nil
+				
 				continue
 			end
 				if VectorField[v.EUID].Meta.Listening[v.Index].Expiration then
@@ -910,6 +918,7 @@ function Vector.Listen(EUID: VectorTypes.VectorElement,Var: any,Type: string,Dur
 				Vector.PollN -= 1
 				Vector.PollT[i] = nil
 						VectorField[v.EUID].Meta.Listening[v.Index] = nil
+						v = nil
 				continue
 			end
 			end
@@ -917,6 +926,7 @@ function Vector.Listen(EUID: VectorTypes.VectorElement,Var: any,Type: string,Dur
 		if Vector.PollN <= 0 or next(Vector.PollT) == nil then
 			Vector.Poll:Disconnect()
 			Vector.Poll = nil
+			
 		end
 	end)
 	end
