@@ -1,6 +1,6 @@
-local CombatTable = {}
-CombatTable.__index = CombatTable
+local VectorField = {}
+VectorField.__index = VectorField
 
 
 
-return CombatTable
+return VectorField
