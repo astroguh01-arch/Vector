@@ -21,7 +21,7 @@ function Unsafe.UnsafeWrite(EUID: number | string,Info, Handler)
 		if Unsafe[EUID] then
 			local VS = Unsafe[EUID]
 		
-			local i,v = Info.Index,Info.Var
+			local i,v = Info.Index, Info.Var
 			
 				
 			VS["Write"][i] = {Value = v.Value,Type = v.Type or typeof(v.Value),Critical = v.Critical or false}
@@ -56,21 +56,13 @@ function Unsafe.UnsafeWrite(EUID: number | string,Info, Handler)
 	end
 end
 
-function Unsafe.Sync(EUID,Data)
-	Unsafe[EUID] = Unsafe[EUID] or {}
-	Unsafe[EUID]["Write"] = Data
-	print(Unsafe)
-	Data = nil
-	return Unsafe[EUID]["Write"]
-end
 function Unsafe.Serial(EUID)
-	local PVS = Unsafe[EUID]
-	local VS = Field[EUID]
-	for i,v in pairs(PVS["Write"]) do
-		Field[EUID].Data[i] = v
-	end
-	print(Field)
+	local PV1 = require( game.ServerScriptService.ParalleVector1.Unsafe)
+	local PV2 = require( game.ServerScriptService.ParalleVector2.Unsafe)
+	PV1:Serial(EUID)
+	PV2:Serial(EUID)
 end
+
 function Unsafe.Distribute(Global,Process,Target,...)
 	local PVs = ...
 	if PVs["Parallel2"].Work >= PVs["Parallel1"].Work then

@@ -609,13 +609,14 @@ function Vector.Write(EUID: number | string,Info: any)
 						if DelayN then
 							Vector.Work += 1
 							UnsafeVector.Distribute(EUID,"Write",{Var = v,Index = i},Vector.Threads)
+							UnsafeVector.Serial(EUID)
 							return 
 						else
 							UnsafeVector.Serial(EUID)
 
 						end
 					end
-					UnsafeVector.Distribute(EUID,"Write",{Var = v,Index = i},Vector.Threads)
+				
 					 if VS.Data[i] then
 					
 						VS.Data[i].Value = Info[i].Value
@@ -628,9 +629,12 @@ function Vector.Write(EUID: number | string,Info: any)
 						VS.Data[i] = {Value = v.Value,Type = v.Type or typeof(v.Value),Critical = v.Critical or false}
 						VS.Meta.IDs[#VS.Meta.IDs] = i
 					end
-					if VS.Meta.Listening[i] and VS.Meta.Listening[i].Type == "OnWrite" then
+					if VS.Meta.Listening[i] then
+						VS.Meta.Listening[i].Value = v.Value
+                    if VS.Meta.Listening[i].Type == "OnWrite" then
 						
 						VS.Meta.Listening[i].Callback(EUID,i,v)
+						end
 					end
 					Vector.Batch[#Vector.Batch] = {UID = EUID,Data =Info[i].Value,Index = i,Type = Info[i].Type or typeof(Info[i].Value)}
 				end
@@ -643,7 +647,7 @@ function Vector.Write(EUID: number | string,Info: any)
 				
 			end
 			Vector.GlobalUpdate = os.clock()
-		    print(VS)
+		
 			if  Vector.Batching  then return end 
 			    Vector.Batching = true
 			 task.delay(0.5,Vector.Task)
@@ -889,14 +893,14 @@ function Vector.Listen(EUID: VectorTypes.VectorElement,Var: any,Type: string,Dur
 					end
 			end
 			local Field = VectorField[v.EUID].Meta.Listening[v.Index]
-				local Value = Vector.Des(VectorField[v.EUID].Data[v.Index].Value,VectorField[v.EUID].Data[v.Index].Type)
+				
 				local Flag = false
 				if Sound then
-				if Value == Sound then
+					if Field.Value == Sound then
 					Flag = true
 					end
 				else
-					if Value ~= Field.Value then
+					if Field.Value ~= v.var.Value then
 						Flag = true
 					end
 				end
