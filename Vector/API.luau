@@ -99,7 +99,7 @@ function module.Listen(Entity,Wrap,Target,Callback)
 	        
 		end
 		
-		Vector.Listen(EUID,Wrap.Var,Wrap.Type,Wrap.Duration or 20,Target,Callback)
+		Vector.Listen(EUID,Wrap.Var,Wrap.Type,Wrap.Duration or nil,Target,Callback)
 		
 		return true
 	end
