@@ -2,16 +2,21 @@
 local Unsafe = {
 	
 }
-local PV1 = game.ServerScriptService:WaitForChild("ParalleVector1")
-local PV2 = game.ServerScriptService:WaitForChild("ParalleVector2")
+local PV1 
+local PV2 
 local Field = require(game.ReplicatedStorage.Vector.VectorField)
+if game.RunService:IsServer() then
+ PV1 = game.ServerScriptService:WaitForChild("ParalleVector1")
+ PV2 = game.ServerScriptService:WaitForChild("ParalleVector2")
+
+end
 function Unsafe.Init(EUID,Info)
 	local v = Info.Var
 	local i = Info.Index
 	Unsafe[EUID] = Unsafe[EUID] or {}
 	Unsafe[EUID]["Write"] = Unsafe[EUID]["Write"] or {}
 	Unsafe[EUID]["Write"][i] =  {Var = v,Worker = PV2,Version = 1}
-	print(Unsafe[EUID]["Write"])
+
 
 end
 function Unsafe.UnsafeWrite(EUID: number | string,Info, Handler)
@@ -39,12 +44,12 @@ function Unsafe.UnsafeWrite(EUID: number | string,Info, Handler)
 		
 				
 			if Handler then
-				print(Info)
+				
 				if Handler == "1" then
-					print(Info)
+					
 					PV1:SendMessage("Sync",EUID,VS["Write"])
 				else
-					print(Info)
+					
 					PV2:SendMessage("Sync",EUID,VS["Write"])
 				end
 			end
@@ -56,6 +61,9 @@ function Unsafe.UnsafeWrite(EUID: number | string,Info, Handler)
 	end
 end
 
+function Unsafe.UnsafeRead(EUID,N)
+	
+end
 function Unsafe.Serial(EUID)
 	local PV1 = require( game.ServerScriptService.ParalleVector1.Unsafe)
 	local PV2 = require( game.ServerScriptService.ParalleVector2.Unsafe)
@@ -66,14 +74,13 @@ end
 function Unsafe.Distribute(Global,Process,Target,...)
 	local PVs = ...
 	if PVs["Parallel2"].Work >= PVs["Parallel1"].Work then
-		
-		print(Unsafe,Process)
+	
 		PV1:SendMessage(Process,Target,Global)
 	
 	else
 	
 		PV2:SendMessage(Process,Target,Global)
-		print(Unsafe,Process)
+	
 	end
 	
 	

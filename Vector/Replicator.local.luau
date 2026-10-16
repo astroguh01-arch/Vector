@@ -1,9 +1,11 @@
+
 local ClientVector = require(game.ReplicatedStorage.Vector.VectorField)
-local Vector = require(game.ReplicatedStorage.Vector)
+local Vector =  require(game.ReplicatedStorage.Vector)
 local Encoder = game:GetService("EncodingService")
 
+
 game.ReplicatedStorage.Vector.Shallow.OnClientEvent:Connect(function(EUID,Data,Operation,...)
-	
+
 	if Operation == "Correction" then
 		local Var = ...
 		local Copy = ClientVector[EUID]
@@ -15,7 +17,7 @@ game.ReplicatedStorage.Vector.Shallow.OnClientEvent:Connect(function(EUID,Data,O
 				Copy.Data[Var] = Data
 			end
 		end
-
+		
 	end
 	if Operation == "Sync" then
 		
@@ -24,7 +26,7 @@ game.ReplicatedStorage.Vector.Shallow.OnClientEvent:Connect(function(EUID,Data,O
 		local NData = Vector.Deserialize(ClientVector[EUID])
 		
 	
-	
+		
 	
 			
 		
@@ -40,7 +42,7 @@ game.ReplicatedStorage.Vector.Shallow.OnClientEvent:Connect(function(EUID,Data,O
 			if VectorTable then
 				v.Data = Vector.Des(v.Data,v.Type,v.Compressed)
 				VectorTable.Data[v.Index] = v.Data
-				
+				print(VectorTable)
 			end
 		end
 	end

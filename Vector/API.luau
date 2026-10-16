@@ -78,7 +78,7 @@ function module.Get(Entity)
 	end
 	return 
 end
-function module.Listen(Entity,Wrap,Target,Callback)
+function module.Listen(Entity,Wrap,Target,Callback,Timeout)
 	if Entity then
 		local EUID 
 		if  Entity:IsA("Player") then
@@ -99,10 +99,46 @@ function module.Listen(Entity,Wrap,Target,Callback)
 	        
 		end
 		
-		Vector.Listen(EUID,Wrap.Var,Wrap.Type,Wrap.Duration or nil,Target,Callback)
+		Vector.Listen(EUID,Wrap.Var,Wrap.Type,Wrap.Duration or nil,Target,Callback,Timeout or nil)
 		
 		return true
 	end
 	
+end
+function module.Rollback(Entity,Global)
+	if Entity then
+		local EUID 
+		if  Entity:IsA("Player") then
+			EUID = Entity.UserId
+		else
+			local Tags = Collector:GetTags(Entity)
+			EUID = Tags["EUID"]
+		end
+		if not EUID then
+			warn("Vector Has Not Been Made")
+			return 
+		end
+		Vector.Rollback(EUID,Global)
+		
+		return true
+	end
+end
+-- experimentals
+function module.Lock(Entity,Target)
+	if Entity then
+		local EUID
+		if  Entity:IsA("Player") then
+			EUID = Entity.UserId
+		else
+			local Tags = Collector:GetTags(Entity)
+			EUID = Tags["EUID"]
+		end
+		if not EUID then
+			warn("Vector Has Not Been Made")
+			return 
+		end
+		
+		Vector.Lock(EUID,Target)
+	end
 end
 return module

@@ -118,7 +118,7 @@ local function CheckRate()
 	local PTime = ((math.floor(Vector.GlobalUpdate / Resolution) % 256) * Resolution) * 1
 	
 	local Delta = math.abs((NTime - PTime) / (NTime + 0.1 / 10))
-	print(Delta)
+
 	if Vector.Delay then
 	local Gate = Delta * 0.4 + (1 - 0.4) * Vector.Delay 
 	
@@ -433,8 +433,11 @@ function Vector.Read(EUID: number | string,Var: any)
 		else
 			Res = Value
 		end
+		else
+			Res = Value
 		end
 	end
+	
 	Vector.GlobalUpdate = os.clock()
 	VectorS.Meta.LastUpdate = os.clock()
 	Vector.Velocity(EUID,Var)
@@ -559,7 +562,7 @@ function Vector.Serde(Info: any,Compress: boolean)
 	
 end
 function Vector.ShallowClient(EUID,Type,Target,Correction)
-
+   
 	local VS = VectorField[EUID]
 	local ShallowCopy
 	if VS then
@@ -574,14 +577,16 @@ function Vector.ShallowClient(EUID,Type,Target,Correction)
 	end
 	local Remote = script.Shallow
 	
-
+	
 	if Correction then
+	
 		Remote:FireAllClients(EUID,Correction,Type,Target)
 	else
+	
 		Remote:FireAllClients(EUID,ShallowCopy,Type)
 	end
 
-
+    
 
 end
 
@@ -605,8 +610,10 @@ function Vector.Write(EUID: number | string,Info: any)
 				
 				for i,v in pairs(Info) do
 					if Config.Parallel then
+						if not v.Serial then 
 						local DelayN = CheckRate()
 						if DelayN then
+							
 							Vector.Work += 1
 							UnsafeVector.Distribute(EUID,"Write",{Var = v,Index = i},Vector.Threads)
 							UnsafeVector.Serial(EUID)
@@ -614,6 +621,7 @@ function Vector.Write(EUID: number | string,Info: any)
 						else
 							UnsafeVector.Serial(EUID)
 
+						end
 						end
 					end
 				
@@ -651,10 +659,6 @@ function Vector.Write(EUID: number | string,Info: any)
 			if  Vector.Batching  then return end 
 			    Vector.Batching = true
 			 task.delay(0.5,Vector.Task)
-				
-				
-			
-			
 		end
 	end
 end
@@ -803,10 +807,13 @@ local function VelIndex(EUID,N)
 	local VS = VectorField[EUID]
 	if VS.Meta.VelocityMap.Fast[N] then
 		return "Fast"
-	else
+	elseif VS.Meta.VelocityMap.Slow[N] then
 		return "Slow"
+	else
+		return "Neutral"
 	end
 end
+
 function Vector.Lock(EUID,Target,Ref)
 	local VS = VectorField[EUID]
 	if not VS.Meta.Dot[Target] then
@@ -861,7 +868,7 @@ function Vector.Des(Value,Type,Compressed)
 	
 	return Res
 end
-function Vector.Listen(EUID: VectorTypes.VectorElement,Var: any,Type: string,Duration: number,Target: any,CallbackF: any)
+function Vector.Listen(EUID: VectorTypes.VectorElement,Var: any,Type: string,Duration: number,Target: any,CallbackF: any,OnExpire: any)
 	-- Poll - constantly check
     -- Event -  connect and wait for event
 	-- OnWrite - lazy listneing
@@ -873,16 +880,16 @@ function Vector.Listen(EUID: VectorTypes.VectorElement,Var: any,Type: string,Dur
 	if Info.Meta.Listening[Var] then
 		Intercept = true
 	end
-	Info.Meta.Listening[Var] = {Type = Type,LastUpdate = os.clock(),Callback = CallbackF,Value = value,target = Target or false,Expiration = Duration or false}
-	
+	Info.Meta.Listening[Var] = {Type = Type,LastUpdate = os.clock(),Callback = CallbackF,Timeout = OnExpire,Value = value,target = Target or false,Expiration = Duration or false}
+
 	if Type == "Poll" then
 	if Intercept then Intercept = false return end
 	Vector.PollN += 1
 		Vector.PollT[Vector.PollN] = {EUID = Info.Meta.UID, var = Info.Meta.Listening[Var],Index = Var}
-	if Vector.Poll then return end
+		
 		
 	Vector.Poll = game.RunService.Heartbeat:Connect(function(dt)
-	
+			
 		for i,v in pairs(Vector.PollT) do
 			local Sound = Info.Meta.Listening[v.Index].target
 				Vector.SF += 1
@@ -916,6 +923,11 @@ function Vector.Listen(EUID: VectorTypes.VectorElement,Var: any,Type: string,Dur
 			end
 				if VectorField[v.EUID].Meta.Listening[v.Index].Expiration then
 					if os.clock() - Field.LastUpdate > Duration then
+						if Field.Timeout then
+							
+							Field.Timeout(VectorField[v.EUID])
+						end
+					
 				Vector.PollN -= 1
 				Vector.PollT[i] = nil
 						VectorField[v.EUID].Meta.Listening[v.Index] = nil
