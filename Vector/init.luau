@@ -644,7 +644,7 @@ function Vector.Write(EUID: number | string,Info: any)
 						VS.Meta.Listening[i].Callback(EUID,i,v)
 						end
 					end
-					Vector.Batch[#Vector.Batch] = {UID = EUID,Data =Info[i].Value,Index = i,Type = Info[i].Type or typeof(Info[i].Value)}
+					Vector.Batch[#Vector.Batch + 1] = {UID = EUID,Data =Info[i].Value,Index = i,Type = Info[i].Type or typeof(Info[i].Value)}
 				end
 			
 			end
