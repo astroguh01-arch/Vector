@@ -127,8 +127,6 @@ VectorAPI.Listen(character, {
 end)
 ```
 
-### Parallel Listeners
-Subscribe to state mutations directly inside worker **Actors** (`BindToMessageParallel`) without routing through the main thread, perfect for compute-heavy visual systems, AI perception, or math solvers.
 
 ### `OnTimeout` Events
 Trigger callbacks when an expected update window expires:
