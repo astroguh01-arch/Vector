@@ -3,6 +3,7 @@
 -- copy and put the actor script under them
 -- actors must be named ParallelActor1 and ParallelActor2 
 -- put replicator inside starterplayerscripts
+-- put unsafe module under actors
 
 # METHODS
 Vector = require(path.Vector.API)
