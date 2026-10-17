@@ -214,9 +214,9 @@ function Vector.Velocity(EUID: number | string,Var: any)
 	local Fastest = VectorField[EUID].Meta.LastUpdate 
 	local FBit = (math.floor(Fastest / Resolution) % 256) * Cycles
 	local RV = VectorField[EUID].Meta.RV or ((FBit + SlowestVel) / 2 )
-	if not VectorField[EUID].Meta.RV then
-		VectorField[EUID].Meta.RV = ((FBit + SlowestVel) / 2 )
-	end
+	
+	VectorField[EUID].Meta.RV = ((FBit + SlowestVel) / 2 )
+	
 	
 	Vector.Acceleration(EUID,Delta)
 	
@@ -273,7 +273,7 @@ function Vector.Jerk(EUID,Accel)
 		local Jerk = (math.abs(Accel[#Accel] - Accel[#Accel - 1]) / (Accel[#Accel - 1] + Resolution / 10) )
 		VectorField[EUID].Meta.Jerk = Jerk
 	
-		Accel = {}
+		Snapshots.Acceleration = {}
 		Vector.Alpha(EUID)
 	end
 	
