@@ -268,7 +268,7 @@ end
 function Vector.Jerk(EUID,Accel)
 	local Snapshots = VectorField[EUID].Meta.Snapshots
 	local Accelerations = Accel
-	local Resolution =  0.1
+	local Resolution =  Vector.Resolution(EUID) or 0.1
 	if #Accel >= 2 then
 		local Jerk = (math.abs(Accel[#Accel] - Accel[#Accel - 1]) / (Accel[#Accel - 1] + Resolution / 10) )
 		VectorField[EUID].Meta.Jerk = Jerk
@@ -703,7 +703,11 @@ function Vector.Register(Entity: Player | Model,Info: VectorTypes.RegisterInfo)
 			VectorField[EUID].Meta.IDs[N] = i
 		end
 	else
-	    EUID = HTTPService:GenerateGUID(false)
+	
+		EUID = HTTPService:GenerateGUID(false)
+		Collector:AddTag(Entity,tostring(EUID),"EUID")
+		local Tag = Collector:GetTags(Entity)
+		EUID = Tag[1]
 		VectorField[EUID] =  {}
 		VectorField[EUID] = {Data =Info.Data
 		    
@@ -741,7 +745,8 @@ function Vector.Register(Entity: Player | Model,Info: VectorTypes.RegisterInfo)
 			N += 1
 			VectorField[EUID].Meta.IDs[N] = i
 		end
-		Collector:AddTag(Entity,tostring(EUID),"EUID")
+		
+	
 	  end
 
 	Vector.ShallowClient(EUID,"Sync")

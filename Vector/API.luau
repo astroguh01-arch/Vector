@@ -15,7 +15,7 @@ function module.Init(Entity,...)
 			Wrapper.Data = Info
 		end
 	end
-	
+	print(Wrapper)
 	Vector.Init(Entity,Wrapper)
 	
 end
@@ -26,7 +26,7 @@ function module.Write(Entity,Data)
 		EUID = Entity.UserId
 	else
 		local Tags = Collector:GetTags(Entity)
-		EUID = Tags["EUID"]
+		EUID = Tags[1]
 	end
 	if not EUID then
 		warn("Vector Has Not Been Made")
@@ -51,7 +51,7 @@ if Data then
 		EUID = Entity.UserId
 	else
 		local Tags = Collector:GetTags(Entity)
-		EUID = Tags["EUID"]
+		EUID = Tags[1]
 	end
 	if not EUID then
 		warn("Vector Has Not Been Made")
@@ -67,7 +67,7 @@ function module.Get(Entity)
 		EUID = Entity.UserId
 	else
 		local Tags = Collector:GetTags(Entity)
-		EUID = Tags["EUID"]
+		EUID = Tags[1]
 	end
 	if not EUID then
 		warn("Vector Has Not Been Made")
@@ -85,7 +85,7 @@ function module.Listen(Entity,Wrap,Target,Callback,Timeout)
 			EUID = Entity.UserId
 		else
 			local Tags = Collector:GetTags(Entity)
-			EUID = Tags["EUID"]
+			EUID = Tags[1]
 		end
 		if not EUID then
 			warn("Vector Has Not Been Made")
@@ -112,7 +112,7 @@ function module.Rollback(Entity,Global)
 			EUID = Entity.UserId
 		else
 			local Tags = Collector:GetTags(Entity)
-			EUID = Tags["EUID"]
+			EUID = Tags[1]
 		end
 		if not EUID then
 			warn("Vector Has Not Been Made")
@@ -131,7 +131,7 @@ function module.Lock(Entity,Target)
 			EUID = Entity.UserId
 		else
 			local Tags = Collector:GetTags(Entity)
-			EUID = Tags["EUID"]
+			EUID = Tags[1]
 		end
 		if not EUID then
 			warn("Vector Has Not Been Made")
