@@ -15,7 +15,7 @@ function module.Init(Entity,...)
 			Wrapper.Data = Info
 		end
 	end
-	print(Wrapper)
+	
 	Vector.Init(Entity,Wrapper)
 	
 end

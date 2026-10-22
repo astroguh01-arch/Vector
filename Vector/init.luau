@@ -148,7 +148,9 @@ local function CycleTime(EUID: number | string)
 	if CyclesPassed > 0 then
 		VectorField[EUID].Meta.Cycle += CyclesPassed 
 	end
-
+	
+	VectorField[EUID].Meta.LastCycle = os.clock()
+	
 	return VectorField[EUID].Meta.Cycle
 end
 	
@@ -192,7 +194,7 @@ end
 function Vector.Velocity(EUID: number | string,Var: any)
 	local ID = table.find(VectorField[EUID].Meta.IDs,Var)
 	local Bits = Vector.BitIndex(EUID,ID)
-
+	
 	local i = ID - 1
 	local Offset = 4 + math.floor(i / 4) * 4
 	local Shift = (i % 4) * 8
@@ -216,8 +218,7 @@ function Vector.Velocity(EUID: number | string,Var: any)
 	local RV = VectorField[EUID].Meta.RV or ((FBit + SlowestVel) / 2 )
 	
 	VectorField[EUID].Meta.RV = ((FBit + SlowestVel) / 2 )
-	
-	
+ 
 	Vector.Acceleration(EUID,Delta)
 	
 	local Gate = 0.4 * Resolution
@@ -231,7 +232,8 @@ function Vector.Velocity(EUID: number | string,Var: any)
 		VectorField[EUID].Meta.VelocityMap.Fast[table.find(VectorField[EUID].Meta.IDs,Var)] = Var
 	end
 
-
+	
+	
 	
 	VelSort(EUID)
 end
@@ -245,6 +247,7 @@ function Vector.Acceleration(EUID: number | string)
 	local Cycles = Cycle * (Resolution / 10)
 	local NTime = ((math.floor(os.clock() / Resolution) % 256) * Resolution) * Cycles
 	local PTime = ((math.floor(VectorField[EUID].Meta.LastUpdate / Resolution) % 256) * Resolution) * Cycles
+
 	local Delta = math.abs((NTime - PTime) / (NTime + Resolution / 10))
 
 	Snapshots.Velocity = Snapshots.Velocity or {}
@@ -263,6 +266,7 @@ function Vector.Acceleration(EUID: number | string)
 		Snapshots.Velocity = {}
 		
 	end
+	
 end
 @native
 function Vector.Jerk(EUID,Accel)
@@ -272,9 +276,11 @@ function Vector.Jerk(EUID,Accel)
 	if #Accel >= 2 then
 		local Jerk = (math.abs(Accel[#Accel] - Accel[#Accel - 1]) / (Accel[#Accel - 1] + Resolution / 10) )
 		VectorField[EUID].Meta.Jerk = Jerk
-	
+		
 		Snapshots.Acceleration = {}
 		Vector.Alpha(EUID)
+		
+		
 	end
 	
 end
@@ -282,11 +288,16 @@ end
 function Vector.Alpha(EUID: number | string)
 	local Jerk = VectorField[EUID].Meta.Jerk
 	local Dir = VectorField[EUID].Meta.Direction
-	local Resolution = Vector.Resolution(EUID) or 0.1
+	local Resolution =  Vector.Resolution(EUID) or 0.1
 	if Jerk and Dir then
 		local NJerk = Jerk / (Jerk + Resolution / 10 )
 		local NDir = Dir / (Dir + Resolution )
-		local Alpha = math.clamp(math.abs(NJerk - NDir),0.1,0.9)
+		local Alpha = math.clamp(math.abs(NJerk + NDir),0.1,0.9)
+		
+		VectorField[EUID].Meta.Alpha = Alpha
+		
+		Vector.Compress(EUID)
+		
 		return Alpha 
 	end
 	return 0.4
@@ -408,6 +419,18 @@ function Vector.BitMap(EUID: number | string)
 	
 	return VectorS.Meta.BitMap
 end
+function Vector.Compress(EUID)
+	local VectorS = VectorField[EUID]
+	
+	if VectorS.Meta.Alpha > 0.4 then
+		for i,v in pairs(VectorS.Meta.VelocityMap.Slow) do
+			local Scalar = VectorS.Data[i]
+		   
+			Scalar.Value = Encoder:CompressBuffer(Scalar.Value,Enum.CompressionAlgorithm.Zstd,1)
+			Scalar.Encoded = true
+		end
+	end
+end
 function Vector.Read(EUID: number | string,Var: any)
    
 	local VectorS = VectorField[EUID]
@@ -452,6 +475,10 @@ function Vector.Get(EUID)
 end
 function Vector.Deserialize(Info: VectorTypes.RegisterInfo)
 	for i,v in pairs(Info.Data) do
+		if v.Encoded then
+			v.Value = Encoder:DecompressBuffer(v.Value,Enum.CompressionAlgorithm.Zstd)
+			print("decompression")
+		end
 		local t = typeof(v.Value)
 		if t == "buffer" then
 			if v.Type == "number" then
@@ -477,7 +504,7 @@ end
 function Vector.Serialize(Info: VectorTypes.RegisterInfo)
 	for i,v in pairs(Info.Data) do
 		local t = typeof(v.Value)
-
+	
 		if t == "table" then
 			continue
 			
@@ -599,7 +626,7 @@ function Vector.Write(EUID: number | string,Info: any)
 			local WriteF = {}
 			
 			
-			VectorField[EUID].Meta.LastUpdate = os.clock()	
+			
 		
 		
 		
@@ -624,7 +651,7 @@ function Vector.Write(EUID: number | string,Info: any)
 						end
 						end
 					end
-				
+					UnsafeVector.Sound(EUID,{Var = v,Index = i},1)
 					 if VS.Data[i] then
 					
 						VS.Data[i].Value = Info[i].Value
@@ -655,7 +682,7 @@ function Vector.Write(EUID: number | string,Info: any)
 				
 			end
 			Vector.GlobalUpdate = os.clock()
-		
+			VectorField[EUID].Meta.LastUpdate = os.clock()	
 			if  Vector.Batching  then return end 
 			    Vector.Batching = true
 			 task.delay(0.5,Vector.Task)
@@ -891,7 +918,8 @@ function Vector.Listen(EUID: VectorTypes.VectorElement,Var: any,Type: string,Dur
 	if Type == "Poll" then
 	if Intercept then Intercept = false return end
 	Vector.PollN += 1
-		Vector.PollT[Vector.PollN] = {EUID = Info.Meta.UID, var = Info.Meta.Listening[Var],Index = Var}
+	Vector.PollT[Vector.PollN] = {EUID = Info.Meta.UID, var = Info.Meta.Listening[Var],Index = Var}
+		
 		
 		
 	Vector.Poll = game.RunService.Heartbeat:Connect(function(dt)
@@ -955,6 +983,12 @@ function Vector.Listen(EUID: VectorTypes.VectorElement,Var: any,Type: string,Dur
 	end
 	if Type == "Event" then
 		script.Shallow.OnServerEvent:Connect(CallbackF)
+	end
+	if not Config.Experimental then
+		warn("Enable Experimental in Vector.Config for this type")
+	return end
+	if Type == "Parallel" then
+		UnsafeVector.UnsafeListen(EUID,Vector.PollT[Vector.PollN],1) 
 	end
 	
 end

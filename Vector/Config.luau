@@ -1,5 +1,7 @@
 local module = {
-Parallel = false, -- note parallel is currently in dev
+Parallel = true,
+Experimental = false,
+
 }
 
 return module

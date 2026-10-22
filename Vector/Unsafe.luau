@@ -3,11 +3,16 @@ local module = {}
 local PV = script.Parent
 local Field = require(game.ReplicatedStorage.Vector.VectorField)
 PV:BindToMessage("res",function(UID,Res)
+
 	module[UID] = module[UID] or {}
 	module[UID]["Write"] = Res
 
 	module.Serial(UID)
 end)
+
+function module.Request(EUID,n)
+	return module[EUID]["Res"][n]
+end
 function module.Serial(EUID)
 	local PVS = module[EUID]
 	if PVS then
