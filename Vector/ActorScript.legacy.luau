@@ -4,7 +4,7 @@ local Unsafe = require(game.ReplicatedStorage.Vector.UnsafeVector)
 Poll = {};
 
 local PV = script.Parent
-print("yo")
+
 PV:BindToMessageParallel("Listen",function(EUID,v)
 
 	Poll[v.Index] = v
