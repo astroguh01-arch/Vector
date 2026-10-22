@@ -651,7 +651,7 @@ function Vector.Write(EUID: number | string,Info: any)
 						end
 						end
 					end
-					UnsafeVector.Sound(EUID,{Var = v,Index = i},1)
+				
 					 if VS.Data[i] then
 					
 						VS.Data[i].Value = Info[i].Value
