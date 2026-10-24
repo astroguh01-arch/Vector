@@ -1,6 +1,9 @@
 --!nonstrict
 --!optimize 2
 
+-- Author: GreenModt/Fentix/Famix
+-- Version: 1.2.2v
+
 local Vector = {}
 local HTTPService = game:GetService("HttpService")
 local Encoder = game:GetService("EncodingService")
@@ -638,7 +641,7 @@ function Vector.Write(EUID: number | string,Info: any)
 				for i,v in pairs(Info) do
 					if Config.Parallel then
 						if not v.Serial then 
-						local DelayN = CheckRate()
+	   			local DelayN = CheckRate()
 						if DelayN then
 							
 							Vector.Work += 1
