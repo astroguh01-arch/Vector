@@ -25,7 +25,7 @@ game.ReplicatedStorage.Vector.Shallow.OnClientEvent:Connect(function(EUID,Data,O
  
 		local NData = Vector.Deserialize(ClientVector[EUID])
 		
-	
+
 		
 	
 			
@@ -41,8 +41,9 @@ game.ReplicatedStorage.Vector.Shallow.OnClientEvent:Connect(function(EUID,Data,O
 		
 			if VectorTable then
 				v.Data = Vector.Des(v.Data,v.Type,v.Compressed)
-				VectorTable.Data[v.Index] = v.Data
-				print(VectorTable)
+				VectorTable.Data[v.Index].Value = v.Data
+				VectorTable.Data[v.Index].Type = v.Type
+				
 			end
 		end
 	end

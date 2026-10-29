@@ -9,6 +9,8 @@ local HTTPService = game:GetService("HttpService")
 local Encoder = game:GetService("EncodingService")
 local Collector = game:GetService("CollectionService")
 local VectorField = require(script.VectorField)
+local MatrixField = require(script.MatrixField)
+local MatrixS = require(script.Matrix)
 local VectorTypes = require(script.VectorTypes)
 local UnsafeVector =  require(script.UnsafeVector)
 local Config = require(script.Config)
@@ -305,6 +307,7 @@ function Vector.Alpha(EUID: number | string)
 	end
 	return 0.4
 end
+@native
 function Vector.BitIndex(EUID: number | string,N : number)
 	return VectorField[EUID].Meta.BitMap[math.ceil(N  / 32)] or false
 end
@@ -422,6 +425,13 @@ function Vector.BitMap(EUID: number | string)
 	
 	return VectorS.Meta.BitMap
 end
+function Vector.Rank(EUID: number | string,Target: any,Rank: number)
+	local Matrix = MatrixField[EUID].Meta.Rank
+	
+	Matrix[Target] = Rank 
+	
+	
+end
 function Vector.Compress(EUID)
 	local VectorS = VectorField[EUID]
 	
@@ -436,7 +446,7 @@ function Vector.Compress(EUID)
 end
 function Vector.Read(EUID: number | string,Var: any)
    
-	local VectorS = VectorField[EUID]
+	local VectorS = VectorField[EUID] 
 	local Type = VectorS.Data[Var].Type
 	local Value = Var.Value or VectorS.Data[Var].Value
 	local Ref = VectorS.Data[Var]
@@ -480,7 +490,7 @@ function Vector.Deserialize(Info: VectorTypes.RegisterInfo)
 	for i,v in pairs(Info.Data) do
 		if v.Encoded then
 			v.Value = Encoder:DecompressBuffer(v.Value,Enum.CompressionAlgorithm.Zstd)
-			print("decompression")
+		
 		end
 		local t = typeof(v.Value)
 		if t == "buffer" then
@@ -593,7 +603,7 @@ function Vector.Serde(Info: any,Compress: boolean)
 end
 function Vector.ShallowClient(EUID,Type,Target,Correction)
    
-	local VS = VectorField[EUID]
+	local VS = VectorField[EUID] or MatrixField[EUID]
 	local ShallowCopy
 	if VS then
 	ShallowCopy = table.freeze(table.clone(VS))
@@ -602,7 +612,7 @@ function Vector.ShallowClient(EUID,Type,Target,Correction)
 	end
 	else
 		if Type == "Sync" or Type == "Correction" then 
-		Vector.Serde(Correction)
+		Vector.Serde(VS,Correction)
 		end
 	end
 	local Remote = script.Shallow
@@ -697,8 +707,49 @@ function Vector.Write(EUID: number | string,Info: any)
 	end
 end
 
-function Vector.Register(Entity: Player | Model,Info: VectorTypes.RegisterInfo)
-    local EUID
+function Vector.Register(Entity: Player | Model,Info: VectorTypes.RegisterInfo,Matrix: boolean)
+	local EUID
+	if Matrix then
+		EUID = Info.Data.Name.Value
+		MatrixField[EUID] =  {}
+		MatrixField[EUID] = {Data =Info.Data
+
+		;	
+		Meta = {
+				UID = EUID;
+			Listening = {};
+			Dot = {};
+			IDs = {};
+			VelocityRanks = {
+				Fast = {}; 
+				Slow = {};};
+			Roles = {};
+			LastUpdate = os.clock();
+			Valid = true;
+			Compact = false;
+			Version = 1;
+			Snapshots = {};
+		};
+
+		Prev = {}
+	}
+	local mt = {__newindex = Vector.Write}
+
+		setmetatable(MatrixField[EUID].Data,mt)
+
+	local N = 0
+
+	for i,v in pairs(Info.Data) do
+
+		if v.Critical then
+			MatrixField[EUID].Prev[i] = v
+		end
+		N += 1
+		MatrixField[EUID].Meta.IDs[N] = i
+	end
+		Vector.ShallowClient(EUID,"Sync")
+		return MatrixField[EUID]
+	end
 	if  Entity:IsA("Player") then
 		EUID = Entity.UserId
 		VectorField[EUID] =  {}
@@ -736,6 +787,7 @@ function Vector.Register(Entity: Player | Model,Info: VectorTypes.RegisterInfo)
 			N += 1
 			VectorField[EUID].Meta.IDs[N] = i
 		end
+
 	else
 	
 		EUID = HTTPService:GenerateGUID(false)
@@ -788,7 +840,9 @@ function Vector.Register(Entity: Player | Model,Info: VectorTypes.RegisterInfo)
 	return VectorField[EUID]
 end
 function Vector.Init(Entity: Player | Model,Info: VectorTypes.RegisterInfo)
-	if Entity == nil then
+	local VectorN 
+	if not Info.Data.Matrix then
+	if Entity == nil  then
 		return
 	end
 	if Info == nil then
@@ -805,12 +859,27 @@ function Vector.Init(Entity: Player | Model,Info: VectorTypes.RegisterInfo)
 	end
 
 	Vector.GVersion += 1
-
-	local VectorN = Vector.Register(Entity,Info)
+  
+	VectorN = Vector.Register(Entity,Info)
 	
 	Vector.Serialize(VectorN)
 	Vector.BitMap(VectorN.Meta.UID)
-	
+	else
+		Info.Data.Matrix = nil
+		
+		if Info == nil then
+			Info = {Data = {}}
+		end
+		for i,v in pairs(Info.Data) do
+			if not v.Type then
+				v.Type = typeof(v.Value)
+			end
+		end
+		
+		VectorN = Vector.Register(Entity,Info,true)
+
+		Vector.Serialize(VectorN)
+	end
     return VectorN
 end
 function Vector.Identify(Instance : Player | Model)

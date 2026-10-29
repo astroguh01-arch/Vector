@@ -1,12 +1,21 @@
+
+-- Author: GreenModt/Fentix/Famix
+-- Version: 1.2.2v
+
 local module = {}
 local Vector = require(script.Parent)
+local Matrix = require(script.Parent.Matrix)
+local Field =  require(script.Parent.MatrixField)
 local Collector = game:GetService("CollectionService")
+
 function module.Init(Entity,...)
 	local Info = ...
 	local Wrapper = {Data = {}}
+	if not Info.Matrix then
 	if not Entity then
 		warn("No Entity Given")
 		return 
+	end
 	end
 	if Info then
 		if Info.Data then
@@ -15,11 +24,12 @@ function module.Init(Entity,...)
 			Wrapper.Data = Info
 		end
 	end
-	
+	print(Wrapper)
 	Vector.Init(Entity,Wrapper)
 	
 end
 function module.Write(Entity,Data)
+
     if Data then
 		local EUID 
 	if  Entity:IsA("Player") then
@@ -32,7 +42,7 @@ function module.Write(Entity,Data)
 		warn("Vector Has Not Been Made")
 		return 
 	end
-	
+		
 	local Wrapper = {}
 	if Data.Value then
 		Wrapper = {Data}
@@ -40,6 +50,15 @@ function module.Write(Entity,Data)
 		Wrapper = Data
 	end
 	
+	if Data.Target then
+		if  Field[Data.Target] then
+		
+			
+			Matrix.Write(Data.Target,EUID,Wrapper)
+			
+			return
+		end
+	end
 	Vector.Write(EUID,Wrapper)
 	end
 end
