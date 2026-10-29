@@ -1,4 +1,7 @@
 
+-- Author: GreenModt/Fentix/Famix
+-- Version: 1.2.2v
+
 local ClientVector = require(game.ReplicatedStorage.Vector.VectorField)
 local Vector =  require(game.ReplicatedStorage.Vector)
 local Encoder = game:GetService("EncodingService")
