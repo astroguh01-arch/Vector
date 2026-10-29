@@ -1,3 +1,7 @@
+
+-- Author: GreenModt/Fentix/Famix
+-- Version: 1.2.2v
+
 local API = require(game.ReplicatedStorage.Vector.API)
 
 
