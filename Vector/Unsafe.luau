@@ -13,23 +13,31 @@ end)
 function module.Request(EUID,n)
 	return module[EUID]["Res"][n]
 end
+
 function module.Serial(EUID)
 	local PVS = module[EUID]
-	if PVS then
-	local VS = Field[EUID]
-	for i,v in pairs(PVS["Write"]) do
-		Field[EUID].Data[i] = v
-		if VS.Meta.Listening[i] then
-				VS.Meta.Listening[i].Value = v.Value
-				if VS.Meta.Listening[i].Type == "OnWrite" then
+	local Work = 0
 
-					VS.Meta.Listening[i].Callback(EUID,i,v)
-				
+	if PVS then
+		local VS = Field[EUID]
+		if VS then
+			for i,v in pairs(PVS["Write"]) do
+				Work += 1
+				Field[EUID].Data[i] = v
+
+
+				if VS.Meta.Listening[i] then
+					VS.Meta.Listening[i].Value = v.Value
+					if VS.Meta.Listening[i].Type == "OnWrite" then
+
+						VS.Meta.Listening[i].Callback(EUID,i,v)
+
+					end
 				end
 			end
+		end
 	end
-	
-	end
-end
 
+	return Work
+end
 return module

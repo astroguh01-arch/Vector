@@ -1,6 +1,6 @@
 
 -- Author: GreenModt/Fentix/Famix
--- Version: 1.2.2v
+-- Version: 1.6.0v
 
 local module = {}
 local Vector = require(script.Parent)

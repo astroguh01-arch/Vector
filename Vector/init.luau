@@ -2,7 +2,7 @@
 --!optimize 2
 
 -- Author: GreenModt/Fentix/Famix
--- Version: 1.2.2v
+-- Version: Version: 1.6.0v
 
 local Vector = {}
 local HTTPService = game:GetService("HttpService")
@@ -630,6 +630,7 @@ function Vector.ShallowClient(EUID,Type,Target,Correction)
 
 end
 
+
 function Vector.Write(EUID: number | string,Info: any)
 	if EUID then
 	
@@ -651,16 +652,38 @@ function Vector.Write(EUID: number | string,Info: any)
 				for i,v in pairs(Info) do
 					if Config.Parallel then
 						if not v.Serial then 
-	   			local DelayN = CheckRate()
+				local DelayN = CheckRate()
+	
 						if DelayN then
 							
 							Vector.Work += 1
 							UnsafeVector.Distribute(EUID,"Write",{Var = v,Index = i},Vector.Threads)
-							UnsafeVector.Serial(EUID)
+							local n,n2  = UnsafeVector.Serial(EUID)
+							
+								if n then
+									Vector.Threads["Parallel1"].Work -= n
+								
+								end
+								if n2 then
+									Vector.Threads["Parallel2"].Work -= n2
+									
+								end
+									
+					
+								
 							return 
 						else
-							UnsafeVector.Serial(EUID)
+								local n,n2  = UnsafeVector.Serial(EUID)
 
+								if n then
+									Vector.Threads["Parallel1"].Work -= n
+
+								end
+								if n2 then
+									Vector.Threads["Parallel2"].Work -= n2
+
+								end
+								
 						end
 						end
 					end

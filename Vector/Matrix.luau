@@ -2,7 +2,7 @@
 --!optimize 2
 
 -- Author: GreenModt/Fentix/Famix
--- Version: 1.5.0v
+--  Version: 1.6.0v
 
 local HTTPService = game:GetService("HttpService")
 local Encoder = game:GetService("EncodingService")

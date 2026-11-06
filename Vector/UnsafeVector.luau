@@ -46,9 +46,12 @@ function Unsafe.UnsafeWrite(EUID: number | string,Info, Handler)
 				
 				if Handler == 1 then
 					
+					
 					PV1:SendMessage("Sync",EUID,VS["Write"])
 					PV1:SendMessage("Sound",VS["Write"][i],EUID,i)
+					
 				else
+					
 					
 					PV2:SendMessage("Sync",EUID,VS["Write"])
 					PV2:SendMessage("Sound",VS["Write"][i],EUID,i)
@@ -109,18 +112,20 @@ end
 function Unsafe.Serial(EUID)
 	local PV1 = require( game.ServerScriptService.ParalleVector1.Unsafe)
 	local PV2 = require( game.ServerScriptService.ParalleVector2.Unsafe)
-	PV1:Serial(EUID)
-	PV2:Serial(EUID)
+	local n = PV1.Serial(EUID)
+	local n2 = PV2.Serial(EUID)
+	
+	return n,n2
 end
 
 function Unsafe.Distribute(Global,Process,Target,...)
 	local PVs = ...
 	if PVs["Parallel2"].Work >= PVs["Parallel1"].Work then
-	
+		PVs["Parallel1"].Work += 1
 		PV1:SendMessage(Process,Target,Global)
 	
 	else
-	
+		PVs["Parallel2"].Work += 1
 		PV2:SendMessage(Process,Target,Global)
 	
 	end
