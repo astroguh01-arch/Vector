@@ -3,7 +3,6 @@
 -- copy and put the actor script under them
 -- actors must be named ParallelActor1 and ParallelActor2 
 -- put replicator inside starterplayerscripts
--- put unsafe module under actors
 
 # METHODS
 Vector = require(path.Vector.API)
@@ -27,3 +26,9 @@ print(Vector.Read(game.Players.GreenModt,"Health")
 Currently Vector has client side replication via batching serialized variables that are compressed before sending, unreliable remote event is a choice.
 Vectors Parallel Work Distribution is still in progress. But if you would like to plug in your own work distributer you just need to change Parallel on Config to true. Vectors CheckRate determines the necessity of distributions.
 
+# FUTURE UPDATES
+
+Full Parallel Distribution Release
+More Benchmarks
+Custom Replication (60 hz)
+ProfileStore Sync

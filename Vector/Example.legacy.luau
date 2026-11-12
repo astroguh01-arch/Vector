@@ -3,8 +3,8 @@
 -- Version: 1.2.2v
 
 local API = require(game.ReplicatedStorage.Vector.API)
-
-
+local Benchmark = require(game.ReplicatedStorage.Vector.VelocityBenchmark)
+print(Benchmark.RunAll())
 local Call = function() 
 	print("yo")
 end
@@ -18,8 +18,4 @@ print(API.Init(nil,{["Health"] = {Value = 200},Name = {Value = "Matrix"},Matrix 
 print(API.Init(game.Players.GreenModt,{["Health"] = {Value = 200},Name = {Value = "Matrix"}})) -- Example of how no Matrix js makes a normal table
 API.Write(game.Players.GreenModt,{["Health"] = {Value = 550},Target = "Matrix"}) -- Write to a Matrix, Target must equal the UID of said Matrix. Writer Entity is required
 print(require(game.ReplicatedStorage.Vector.VectorField)) -- Read the Vector Field, will return a table of all the players and their data
-while true do
-	task.wait(0.1)
-	API.Write(game.Players.GreenModt,{["Health"] = {Value = 20}})
 
-end
