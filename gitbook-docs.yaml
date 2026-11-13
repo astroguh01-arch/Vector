@@ -15,6 +15,5 @@ site:
           title: Vector
           path: landing-page
           default: true
-          draft: true
           content:
             directory: ./vector/landing-page
