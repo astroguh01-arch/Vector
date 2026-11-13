@@ -6,11 +6,13 @@ site:
       key: section-2
       title: Vector
       path: vector
+      description: A Data Management Library For Roblox
+      icon: v
       default: true
       children:
         - type: space
           key: space-2
-          title: Landing Page
+          title: Vector
           path: landing-page
           default: true
           draft: true
