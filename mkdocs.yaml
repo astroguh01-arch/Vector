@@ -1,0 +1,38 @@
+site_name: Vector
+site_description: A state management library for Roblox
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: indigo
+      accent: blue
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - search.suggest
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - API:
+      - Write: api/write.md
+      - Read: api/read.md
+      - Listen: api/listen.md
+      - Matrices: api/matrices.md
+  - Internals:
+      - Information Velocity: internals/information-velocity.md
+      - Compression: internals/compression.md
+      - Parallelism: internals/parallelism.md
