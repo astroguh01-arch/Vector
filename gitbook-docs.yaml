@@ -1,10 +1,30 @@
+$schema: https://api.gitbook.com/gitbook-docs.yaml
 site:
-  title: Vector
-  description: A data management library for Roblox
+  title: Vect Docs
   structure:
-    - type: space
-      key: vector
-      title: Documentation
-      path: /
-      content:
-        directory: ./docs
+    - type: section
+      key: section-1
+      title: Vect Docs
+      path: vect-docs
+      default: true
+      children:
+        - type: space
+          key: space-1
+          title: Documentation
+          path: documentation
+          default: true
+          content:
+            directory: ./documentation
+    - type: section
+      key: section-2
+      title: Vector
+      path: vector
+      children:
+        - type: space
+          key: space-2
+          title: Landing Page
+          path: landing-page
+          default: true
+          draft: true
+          content:
+            directory: ./vector/landing-page
