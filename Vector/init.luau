@@ -444,6 +444,8 @@ function Vector.Compress(EUID)
 	if VectorS.Meta.Alpha > 0.4 then
 		for i,v in pairs(VectorS.Meta.VelocityMap.Slow) do
 			local Scalar = VectorS.Data[v]
+			if Scalar.Encoded then continue end
+			
 
 			Scalar.Value = Encoder:CompressBuffer(Scalar.Value,Enum.CompressionAlgorithm.Zstd,1)
 			Scalar.Encoded = true
@@ -456,7 +458,11 @@ function Vector.Read(EUID: number | string,Var: any)
 	local Type = VectorS.Data[Var].Type
 	local Value = Var.Value or VectorS.Data[Var].Value
 	local Ref = VectorS.Data[Var]
-
+	if Ref.Encoded then
+       
+		Value = Encoder:DecompressBuffer(Value,Enum.CompressionAlgorithm.Zstd)
+		
+	end
 	local Res 
 	if VectorS then
 		local t = typeof(Value)
@@ -467,7 +473,7 @@ function Vector.Read(EUID: number | string,Var: any)
 				Res = buffer.readf64(Value,0)
 			elseif Type == "Vector3" then
 				Res = Vector3.new(buffer.readf32(Value,0),buffer.readf32(Value,4),buffer.readf32(Value,8))
-			elseif Type == "Bool" then
+			elseif Type == "boolean" then
 				Res = buffer.readu8(Value,0)
 
 			elseif Type == "number" then
@@ -540,9 +546,9 @@ function Vector.Serialize(Info: VectorTypes.RegisterInfo)
 			end
 		elseif t == "Vector3" then
 			local b = buffer.create(12)
-			buffer.writef32(b,0,v.X)
-			buffer.writef32(b,4,v.Y)
-			buffer.writef32(b,8,v.Z)
+			buffer.writef32(b,0,v.Value.X)
+			buffer.writef32(b,4,v.Value.Y)
+			buffer.writef32(b,8,v.Value.Z)
 			v.Value = b
 		elseif t == "boolean" then
 			local b = buffer.create(1)
@@ -583,9 +589,9 @@ function Vector.Serde(Info: any,Compress: boolean)
 			end
 		elseif t == "Vector3" then
 			local b = buffer.create(12)
-			buffer.writef32(b,0,v.X)
-			buffer.writef32(b,4,v.Y)
-			buffer.writef32(b,8,v.Z)
+			buffer.writef32(b,0,v.Value.X)
+			buffer.writef32(b,4,v.Value.Y)
+			buffer.writef32(b,8,v.Value.Z)
 			if Compress then
 				b = Encoder:CompressBuffer(b,Enum.CompressionAlgorithm.Zstd)
 			end
@@ -677,7 +683,7 @@ function Vector.Write(EUID: number | string,Info: any)
 
 
 
-								return 
+								continue 
 							else
 								local n,n2  = UnsafeVector.Serial(EUID)
 
@@ -708,7 +714,7 @@ function Vector.Write(EUID: number | string,Info: any)
 						VS.Meta.Compact = false
 					else
 						VS.Data[i] = {Value = v.Value,Type = v.Type or typeof(v.Value),Critical = v.Critical or false}
-						VS.Meta.IDs[#VS.Meta.IDs] = i
+						VS.Meta.IDs[#VS.Meta.IDs + 1] = i
 					end
 					if VS.Meta.Listening[i] then
 						VS.Meta.Listening[i].Value = v.Value
@@ -1026,13 +1032,14 @@ function Vector.Listen(EUID: VectorTypes.VectorElement,Var: any,Type: string,Dur
 		Vector.PollT[Vector.PollN] = {EUID = Info.Meta.UID, var = Info.Meta.Listening[Var],Index = Var}
 
 
-
+        if Vector.Poll then return end 
 		Vector.Poll = game.RunService.Heartbeat:Connect(function(dt)
 
 			for i,v in pairs(Vector.PollT) do
-				local Sound = Info.Meta.Listening[v.Index].target
+				local VS  = VectorField[v.EUID]
+				local Sound = VS.Meta.Listening[v.Index].target
 				Vector.SF += 1
-				if VectorField[v.EUID].Meta.VelocityMap.Slow[v.Index] then
+				if VectorField[v.EUID].Meta.VelocityMap.Slow[table.find(VS.Meta.IDs,v.Index)] then
 					if Vector.SF % 4 ~= 0 then
 						Vector.SF = 0
 						continue
@@ -1061,7 +1068,7 @@ function Vector.Listen(EUID: VectorTypes.VectorElement,Var: any,Type: string,Dur
 					continue
 				end
 				if VectorField[v.EUID].Meta.Listening[v.Index].Expiration then
-					if os.clock() - Field.LastUpdate > Duration then
+					if os.clock() - Field.LastUpdate > Field.Expiration then
 						if Field.Timeout then
 
 							Field.Timeout(VectorField[v.EUID])

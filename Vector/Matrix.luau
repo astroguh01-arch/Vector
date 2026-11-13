@@ -67,13 +67,15 @@ function Matrix.Write(EUID,UID,...)
 	local Wrap = ...
 	for i,v in pairs(Wrap) do
 	Wrap.Target = nil
-	
-	if matrix.Meta.Dot[Wrap.Var] then
-		return
+	local target = matrix.Meta.Dot[i]
+
+	if target and target.UID == UID then
+		continue
 	end
 
+
 	local Res = Matrix.Lock(EUID,UID,{Attempts = 0,Target = i,UID = UID})
-	if Res == "Granted" or "Stolen" then
+		if Res == "Granted" or Res ==  "Stolen" then
      
 		matrix.Data[i].Value = v.Value
 		matrix.Data[i].Type = typeof(v.Value)
@@ -106,22 +108,25 @@ function Matrix.Lock(EUID,UID,...)
 		if target.Attempts > 2 then
 			if matrix.Meta.Rank[UID] and  matrix.Meta.Rank[target.UID] then
 			if matrix.Meta.Rank[UID] > matrix.Meta.Rank[target.UID] then
+				Wrap.Attempts = 0
 				matrix.Meta.Dot[Wrap.Target] = Wrap
-				target.Attempts = 0
 				return "Stolen"
 			else
 				return "Locked"
 			end
 			else
 				local Vel =  MatrixField[EUID].Meta.VelocityRank
+				if Vel[UID] and Vel[target.UID] then
 				if Vel[UID] < Vel[target.UID] then
+					Wrap.Attempts = 0
 					matrix.Meta.Dot[Wrap.Target] = Wrap
-					target.Attempts = 0
 					return "Stolen"
 				else
 					return "Locked"
 				end
-			
+				else
+					return "Locked"
+				end
 				
 			end
 		else
@@ -130,7 +135,7 @@ function Matrix.Lock(EUID,UID,...)
 		end
 	else
 	
-		matrix.Meta.Dot = {[Wrap.Target] = {}}
+	
 		matrix.Meta.Dot[Wrap.Target] = Wrap
 		return "Granted"
 	end
