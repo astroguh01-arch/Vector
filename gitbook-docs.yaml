@@ -3,22 +3,10 @@ site:
   title: Vect Docs
   structure:
     - type: section
-      key: section-1
-      title: Vect Docs
-      path: vect-docs
-      default: true
-      children:
-        - type: space
-          key: space-1
-          title: Documentation
-          path: documentation
-          default: true
-          content:
-            directory: ./documentation
-    - type: section
       key: section-2
       title: Vector
       path: vector
+      default: true
       children:
         - type: space
           key: space-2
