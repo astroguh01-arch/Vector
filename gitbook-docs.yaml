@@ -1,7 +1,10 @@
 site:
   title: Vector
-  description: A state management library for Roblox
+  description: A data management library for Roblox
   structure:
-    - title: Documentation
-      path: ./docs
-      slug: /
+    - type: space
+      key: vector
+      title: Documentation
+      path: /
+      content:
+        directory: ./docs
