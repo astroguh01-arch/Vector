@@ -1,0 +1,1466 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A state management library for Roblox">
+      
+      
+      
+      
+        <link rel="prev" href="../getting-started/">
+      
+      
+        <link rel="next" href="../api/write/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/vector-logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>Benchmarks - Vector</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/vector.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#benchmarks" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Vector" class="md-header__button md-logo" aria-label="Vector" data-md-component="logo">
+      
+  <img src="../assets/vector-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Vector
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Benchmarks
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../getting-started/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Benchmarks
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api/write/" class="md-tabs__link">
+          
+  
+  
+  API
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../internals/architecture/" class="md-tabs__link">
+          
+  
+  
+  Internals
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Vector" class="md-nav__button md-logo" aria-label="Vector" data-md-component="logo">
+      
+  <img src="../assets/vector-logo.png" alt="logo">
+
+    </a>
+    Vector
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scan-pollution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scan pollution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exploration-to-combat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exploration to combat
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mixed-update-rates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mixed update rates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mixed update rates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#observed-clock-rates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Observed clock rates
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dormant-field-reactivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dormant field reactivation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-the-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the results
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Functions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/write/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Write
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/read/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Read
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/listen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Listen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Types
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Data Types
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/scalars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalars
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/vectors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vectors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/matrices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matrices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internals
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Internals
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../internals/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Records and Data Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../internals/information-velocity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Classification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../internals/compression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../internals/parallelism/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parallelism
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scan-pollution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scan pollution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exploration-to-combat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exploration to combat
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mixed-update-rates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mixed update rates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mixed update rates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#observed-clock-rates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Observed clock rates
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dormant-field-reactivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dormant field reactivation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-the-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the results
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="benchmarks">Benchmarks</h1>
+<p>Results from a Roblox Studio server run comparing Vector's access classifier with ARC (Adaptive Replacement Cache) and W-TinyLFU with a 4-bit sketch. The first three workloads score how well each method identifies hot fields. The fourth measures how many accesses it takes to promote a dormant field.</p>
+<div class="benchmark-grid" aria-label="Vector F1 scores">
+<section class="benchmark-card"><h2>Scan pollution</h2>
+<div class="benchmark-result"><span>Vector</span><strong>100%</strong><div class="benchmark-track" aria-hidden="true"><span class="benchmark-fill benchmark-fill--vector" style="width:100.00000%"></span></div></div>
+<div class="benchmark-result"><span>ARC</span><strong>87.5%</strong><div class="benchmark-track" aria-hidden="true"><span class="benchmark-fill benchmark-fill--arc" style="width:87.50000%"></span></div></div>
+<div class="benchmark-result"><span>W-TinyLFU</span><strong>87.5%</strong><div class="benchmark-track" aria-hidden="true"><span class="benchmark-fill benchmark-fill--tinylfu" style="width:87.50000%"></span></div></div>
+</section>
+<section class="benchmark-card"><h2>Exploration to combat</h2>
+<div class="benchmark-result"><span>Vector</span><strong>92.47%</strong><div class="benchmark-track" aria-hidden="true"><span class="benchmark-fill benchmark-fill--vector" style="width:92.47312%"></span></div></div>
+<div class="benchmark-result"><span>ARC</span><strong>89.6%</strong><div class="benchmark-track" aria-hidden="true"><span class="benchmark-fill benchmark-fill--arc" style="width:89.60000%"></span></div></div>
+<div class="benchmark-result"><span>W-TinyLFU</span><strong>20%</strong><div class="benchmark-track" aria-hidden="true"><span class="benchmark-fill benchmark-fill--tinylfu" style="width:20.00000%"></span></div></div>
+</section>
+<section class="benchmark-card"><h2>Mixed update rates</h2>
+<div class="benchmark-result"><span>Vector</span><strong>100%</strong><div class="benchmark-track" aria-hidden="true"><span class="benchmark-fill benchmark-fill--vector" style="width:100.00000%"></span></div></div>
+<div class="benchmark-result"><span>ARC</span><strong>94.87%</strong><div class="benchmark-track" aria-hidden="true"><span class="benchmark-fill benchmark-fill--arc" style="width:94.87107%"></span></div></div>
+<div class="benchmark-result"><span>W-TinyLFU</span><strong>97.5%</strong><div class="benchmark-track" aria-hidden="true"><span class="benchmark-fill benchmark-fill--tinylfu" style="width:97.50009%"></span></div></div>
+</section>
+</div>
+
+<p>The cards show the reported F1 scores on a 0–100% scale. F1 balances precision and recall. Higher scores indicate better hot-field classification, while lower delay indicates less measured work per access in this run.</p>
+<h2 id="scan-pollution">Scan pollution</h2>
+<p>A Zipfian workload followed by 20 one-off scan accesses. Vector classified all eight hot fields and all 20 cold fields correctly. ARC and W-TinyLFU each reported one false positive and one false negative.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th style="text-align: right;">Accuracy</th>
+<th style="text-align: right;">Precision</th>
+<th style="text-align: right;">Recall</th>
+<th style="text-align: right;">F1</th>
+<th style="text-align: right;">Final F1</th>
+<th style="text-align: right;">Mean delay (µs)</th>
+<th style="text-align: right;">Total time (ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vector</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">16.125</td>
+<td style="text-align: right;">17.737</td>
+</tr>
+<tr>
+<td>ARC</td>
+<td style="text-align: right;">92.86%</td>
+<td style="text-align: right;">87.5%</td>
+<td style="text-align: right;">87.5%</td>
+<td style="text-align: right;">87.5%</td>
+<td style="text-align: right;">87.5%</td>
+<td style="text-align: right;">0.253</td>
+<td style="text-align: right;">0.278</td>
+</tr>
+<tr>
+<td>W-TinyLFU</td>
+<td style="text-align: right;">92.86%</td>
+<td style="text-align: right;">87.5%</td>
+<td style="text-align: right;">87.5%</td>
+<td style="text-align: right;">87.5%</td>
+<td style="text-align: right;">87.5%</td>
+<td style="text-align: right;">1.230</td>
+<td style="text-align: right;">1.353</td>
+</tr>
+</tbody>
+</table>
+<h2 id="exploration-to-combat">Exploration to combat</h2>
+<p>The working set switches from exploration to combat. Scores summarize 50 post-switch samples. Vector and ARC both reached 100% F1 at the final snapshot, while W-TinyLFU ended at 20%.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th style="text-align: right;">Accuracy</th>
+<th style="text-align: right;">Precision</th>
+<th style="text-align: right;">Recall</th>
+<th style="text-align: right;">F1</th>
+<th style="text-align: right;">Final F1</th>
+<th style="text-align: right;">Mean delay (µs)</th>
+<th style="text-align: right;">Total time (ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vector</td>
+<td style="text-align: right;">93%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">86%</td>
+<td style="text-align: right;">92.47%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">7.170</td>
+<td style="text-align: right;">0.358</td>
+</tr>
+<tr>
+<td>ARC</td>
+<td style="text-align: right;">89.6%</td>
+<td style="text-align: right;">89.6%</td>
+<td style="text-align: right;">89.6%</td>
+<td style="text-align: right;">89.6%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">0.302</td>
+<td style="text-align: right;">0.015</td>
+</tr>
+<tr>
+<td>W-TinyLFU</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">3.882</td>
+<td style="text-align: right;">0.194</td>
+</tr>
+</tbody>
+</table>
+<h2 id="mixed-update-rates">Mixed update rates</h2>
+<p>Heartbeat schedules four clocks at 60, 15, 2, and 0.2 Hz. The reported score is time-weighted over a 10-second window after a five-second warmup, using 601 samples.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th style="text-align: right;">Accuracy</th>
+<th style="text-align: right;">Precision</th>
+<th style="text-align: right;">Recall</th>
+<th style="text-align: right;">F1</th>
+<th style="text-align: right;">Final F1</th>
+<th style="text-align: right;">Mean delay (µs)</th>
+<th style="text-align: right;">Total time (ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vector</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">14.518</td>
+<td style="text-align: right;">32.723</td>
+</tr>
+<tr>
+<td>ARC</td>
+<td style="text-align: right;">94.87%</td>
+<td style="text-align: right;">94.87%</td>
+<td style="text-align: right;">94.87%</td>
+<td style="text-align: right;">94.87%</td>
+<td style="text-align: right;">0%</td>
+<td style="text-align: right;">1.212</td>
+<td style="text-align: right;">2.731</td>
+</tr>
+<tr>
+<td>W-TinyLFU</td>
+<td style="text-align: right;">97.5%</td>
+<td style="text-align: right;">97.5%</td>
+<td style="text-align: right;">97.5%</td>
+<td style="text-align: right;">97.5%</td>
+<td style="text-align: right;">75%</td>
+<td style="text-align: right;">3.800</td>
+<td style="text-align: right;">8.566</td>
+</tr>
+</tbody>
+</table>
+<h3 id="observed-clock-rates">Observed clock rates</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Target rate</th>
+<th style="text-align: right;">Observed rate</th>
+<th style="text-align: right;">Ticks recorded</th>
+<th style="text-align: right;">Missed ticks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">60 Hz</td>
+<td style="text-align: right;">58.100 Hz</td>
+<td style="text-align: right;">872</td>
+<td style="text-align: right;">28</td>
+</tr>
+<tr>
+<td style="text-align: right;">15 Hz</td>
+<td style="text-align: right;">14.792 Hz</td>
+<td style="text-align: right;">222</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td style="text-align: right;">2 Hz</td>
+<td style="text-align: right;">1.999 Hz</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: right;">0.2 Hz</td>
+<td style="text-align: right;">0.200 Hz</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>The clock run lasted 15.009 seconds. All three methods received the same samples.</p>
+<h2 id="dormant-field-reactivation">Dormant field reactivation</h2>
+<p>This workload repeatedly accesses a dormant field against a saturated working set and records the access step where it is promoted to Fast.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th style="text-align: right;">Accesses to promotion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vector</td>
+<td style="text-align: right;">No promotion recorded</td>
+</tr>
+<tr>
+<td>ARC</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>W-TinyLFU</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+<p>The run reports <code>-1</code> for Vector, shown here as no promotion recorded.</p>
+<h2 id="reading-the-results">Reading the results</h2>
+<p>These results describe one benchmark run. The final snapshot shows where each method ended, while the reported score reflects the scenario's sampling method. For example, the phase-switch score includes the transition period. Timing results describe the measured benchmark operations, not end-to-end network latency.</p>
+<p>See <a href="../internals/information-velocity/">Classification</a> for how Vector computes velocity, acceleration, jerk, and alpha.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
