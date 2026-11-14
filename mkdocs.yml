@@ -34,6 +34,7 @@ extra_javascript:
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
+  - Benchmarks: benchmarks.md
   - API:
       - Functions:
           - Write: api/write.md

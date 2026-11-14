@@ -102,3 +102,42 @@
 @media (max-width: 720px) {
   .md-typeset .vector-hero { grid-template-columns: minmax(0, 1fr); }
 }
+
+.benchmark-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: .7rem;
+  margin-block: 1.25rem;
+}
+.md-typeset .benchmark-card {
+  padding: .95rem;
+  border: 1px solid #344565;
+  border-radius: .7rem;
+  background: linear-gradient(145deg, #17243a, #121a2d);
+}
+.md-typeset .benchmark-card h2 {
+  margin: 0 0 .6rem;
+  font-size: .95rem;
+}
+.benchmark-result {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: .2rem .5rem;
+  margin: .45rem 0 0;
+  font-size: .7rem;
+  font-variant-numeric: tabular-nums;
+}
+.benchmark-track {
+  grid-column: 1 / -1;
+  height: .28rem;
+  border-radius: 1rem;
+  background: #26344e;
+}
+.benchmark-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+.benchmark-fill--vector { background: #75e1f5; }
+.benchmark-fill--arc { background: #b4a5fa; }
+.benchmark-fill--tinylfu { background: #f1bc80; }

@@ -2,7 +2,7 @@
 --!optimize 2
 
 -- Author: GreenModt/Fentix/Famix
--- Version: Version: 1.6.0v
+-- Version: Version: 1.8.5v
 
 local Vector = {}
 local HTTPService = game:GetService("HttpService")
@@ -147,14 +147,16 @@ local function CycleTime(EUID: number | string)
 	local LastCycle = VectorField[EUID].Meta.LastCycle 
 	local Resolution = VectorField[EUID].Meta.Resolution or 0.1 
 
-	local CycleLimit = (os.clock() - LastCycle) / (Resolution / 0.1)
-	local CyclesPassed = math.floor(CycleLimit / 25.6 / Resolution )
+
+	local CycleLimit = 256 * Resolution
+	local CyclesPassed = math.floor((os.clock() - LastCycle) / CycleLimit)
 
 	if CyclesPassed > 0 then
-		VectorField[EUID].Meta.Cycle += CyclesPassed 
+		VectorField[EUID].Meta.Cycle += CyclesPassed
+		VectorField[EUID].Meta.LastCycle += CyclesPassed * CycleLimit
 	end
 
-	VectorField[EUID].Meta.LastCycle = os.clock()
+
 
 	return VectorField[EUID].Meta.Cycle
 end
@@ -226,8 +228,10 @@ function Vector.Velocity(EUID: number | string,Var: any)
 
 	Vector.Acceleration(EUID,Delta)
 
-	local Gate = 0.4 * Resolution
+	--local Gate = 0.4 * Resolution
 	local a = Vector.Alpha(EUID)
+	local Gate = ((1 - a) * Resolution)
+	
 	RV = (FBit * a + (1 - a) * RV) * (Resolution / 10)
 	VectorField[EUID].Meta.DeltaRV = math.abs( (VectorField[EUID].Meta.RV - RV ) / (VectorField[EUID].Meta.RV + (Resolution / 10)))
 
@@ -444,8 +448,6 @@ function Vector.Compress(EUID)
 	if VectorS.Meta.Alpha > 0.4 then
 		for i,v in pairs(VectorS.Meta.VelocityMap.Slow) do
 			local Scalar = VectorS.Data[v]
-			if Scalar.Encoded then continue end
-			
 
 			Scalar.Value = Encoder:CompressBuffer(Scalar.Value,Enum.CompressionAlgorithm.Zstd,1)
 			Scalar.Encoded = true
@@ -458,11 +460,7 @@ function Vector.Read(EUID: number | string,Var: any)
 	local Type = VectorS.Data[Var].Type
 	local Value = Var.Value or VectorS.Data[Var].Value
 	local Ref = VectorS.Data[Var]
-	if Ref.Encoded then
-       
-		Value = Encoder:DecompressBuffer(Value,Enum.CompressionAlgorithm.Zstd)
-		
-	end
+
 	local Res 
 	if VectorS then
 		local t = typeof(Value)
@@ -473,7 +471,7 @@ function Vector.Read(EUID: number | string,Var: any)
 				Res = buffer.readf64(Value,0)
 			elseif Type == "Vector3" then
 				Res = Vector3.new(buffer.readf32(Value,0),buffer.readf32(Value,4),buffer.readf32(Value,8))
-			elseif Type == "boolean" then
+			elseif Type == "Bool" then
 				Res = buffer.readu8(Value,0)
 
 			elseif Type == "number" then
@@ -546,9 +544,9 @@ function Vector.Serialize(Info: VectorTypes.RegisterInfo)
 			end
 		elseif t == "Vector3" then
 			local b = buffer.create(12)
-			buffer.writef32(b,0,v.Value.X)
-			buffer.writef32(b,4,v.Value.Y)
-			buffer.writef32(b,8,v.Value.Z)
+			buffer.writef32(b,0,v.X)
+			buffer.writef32(b,4,v.Y)
+			buffer.writef32(b,8,v.Z)
 			v.Value = b
 		elseif t == "boolean" then
 			local b = buffer.create(1)
@@ -589,9 +587,9 @@ function Vector.Serde(Info: any,Compress: boolean)
 			end
 		elseif t == "Vector3" then
 			local b = buffer.create(12)
-			buffer.writef32(b,0,v.Value.X)
-			buffer.writef32(b,4,v.Value.Y)
-			buffer.writef32(b,8,v.Value.Z)
+			buffer.writef32(b,0,v.X)
+			buffer.writef32(b,4,v.Y)
+			buffer.writef32(b,8,v.Z)
 			if Compress then
 				b = Encoder:CompressBuffer(b,Enum.CompressionAlgorithm.Zstd)
 			end
@@ -683,7 +681,7 @@ function Vector.Write(EUID: number | string,Info: any)
 
 
 
-								continue 
+								return 
 							else
 								local n,n2  = UnsafeVector.Serial(EUID)
 
@@ -714,7 +712,7 @@ function Vector.Write(EUID: number | string,Info: any)
 						VS.Meta.Compact = false
 					else
 						VS.Data[i] = {Value = v.Value,Type = v.Type or typeof(v.Value),Critical = v.Critical or false}
-						VS.Meta.IDs[#VS.Meta.IDs + 1] = i
+						VS.Meta.IDs[#VS.Meta.IDs] = i
 					end
 					if VS.Meta.Listening[i] then
 						VS.Meta.Listening[i].Value = v.Value
@@ -1032,14 +1030,13 @@ function Vector.Listen(EUID: VectorTypes.VectorElement,Var: any,Type: string,Dur
 		Vector.PollT[Vector.PollN] = {EUID = Info.Meta.UID, var = Info.Meta.Listening[Var],Index = Var}
 
 
-        if Vector.Poll then return end 
+
 		Vector.Poll = game.RunService.Heartbeat:Connect(function(dt)
 
 			for i,v in pairs(Vector.PollT) do
-				local VS  = VectorField[v.EUID]
-				local Sound = VS.Meta.Listening[v.Index].target
+				local Sound = Info.Meta.Listening[v.Index].target
 				Vector.SF += 1
-				if VectorField[v.EUID].Meta.VelocityMap.Slow[table.find(VS.Meta.IDs,v.Index)] then
+				if VectorField[v.EUID].Meta.VelocityMap.Slow[v.Index] then
 					if Vector.SF % 4 ~= 0 then
 						Vector.SF = 0
 						continue
@@ -1068,7 +1065,7 @@ function Vector.Listen(EUID: VectorTypes.VectorElement,Var: any,Type: string,Dur
 					continue
 				end
 				if VectorField[v.EUID].Meta.Listening[v.Index].Expiration then
-					if os.clock() - Field.LastUpdate > Field.Expiration then
+					if os.clock() - Field.LastUpdate > Duration then
 						if Field.Timeout then
 
 							Field.Timeout(VectorField[v.EUID])
